@@ -2,8 +2,8 @@
 #include <LiquidCrystal_I2C.h>
 #include <RTClib.h>
 
-#define showClockDelay 10000
-#define showWeatherDelay 3000
+#define showTimeDelay 10000
+#define showTempDelay 3000
 #define showDateDelay 3000
 
 const char fullDateFormat[] = "DD.MM.YYYY hh:mm:ss";
@@ -11,14 +11,14 @@ const char dateFormat[] = "DDMM";
 const char timeFormat[] = "hhmm";
 
 LedControl lc = LedControl(8, 10, 9, 1);  // DIN, CLK, CS, num | layout: fc16
-LiquidCrystal_I2C lcd(0x3F, 16, 2);       // custom address!
+LiquidCrystal_I2C lcd(0x3F, 16, 2);       // custom I2C address
 RTC_DS3231 rtc;                           // in real project using DS3231 instead of DS1307
 
 DateTime rtcNow;
 uint32_t curMillis = 0;
-uint32_t lastClockStateChange = 0;
+uint32_t lastViewStateChange = 0;
 uint32_t lastSetStateChange = 0;
-uint8_t clockState = 0;
+uint8_t viewState = 0;
 uint8_t setState = 0;
 
 uint8_t matrixState[8] = { 60, 66, 165, 129, 165, 153, 66, 60 };  // ☺
@@ -50,41 +50,45 @@ void setup() {
 void loop() {
   curMillis = millis();
 
+  updateClockView();
   updateClockState();
-
-  // TODO: updateSetState();
 
   delay(100);
 }
 
-void updateClockState() {
-  switch (clockState % 3) {
+void updateClockView() {
+  switch (viewState % 3) {
     case 0:
-      showClock();
-      if (lastClockStateChange + showClockDelay < curMillis) {
-        clockState++;
-        lastClockStateChange = curMillis;
+      showTime();
+      if (lastViewStateChange + showTimeDelay < curMillis) {
+        viewState++;
+        lastViewStateChange = curMillis;
         showDate();
       }
       break;
     case 1:
-      if (lastClockStateChange + showDateDelay < curMillis) {
-        clockState++;
-        lastClockStateChange = curMillis;
+      if (lastViewStateChange + showDateDelay < curMillis) {
+        viewState++;
+        lastViewStateChange = curMillis;
         showWeather();
       }
       break;
     case 2:
-      if (lastClockStateChange + showWeatherDelay < curMillis) {
-        clockState++;
-        lastClockStateChange = curMillis;
-        showClock();
+      if (lastViewStateChange + showTempDelay < curMillis) {
+        viewState++;
+        lastViewStateChange = curMillis;
+        showTime();
       }
       break;
   }
 }
 
-void showClock() {
+void updateClockState() {
+  // TODO: написать логику установки времени и даты на часах
+  // switch (setState)
+}
+
+void showTime() {
   rtcNow = rtc.now();
   showData(rtcNow.toString(timeFormat), rtcNow.second() % 2 == 0);
 }
@@ -95,12 +99,18 @@ void showDate() {
 }
 
 void showWeather() {
-  int8_t curTemp = (int)rtc.getTemperature();
-  // 1) добавить 100 битовым сдвигом: -103 / 103
-  // 2) превратить в строку, удалив 1, добавив + и пробел: " -03" / " +03"
-  // TODO: use rtc.getTemperature()
+  float fTemp = rtc.getTemperature();
+  uint8_t iTemp = round(abs(fTemp));
+  char sTemp[5];
 
-  showData(" +23", false);
+  if (iTemp == 0) {
+    snprintf(sTemp, 5, "  0C");
+  } else if (iTemp < 10) {
+    snprintf(sTemp, 5, " %c%d%c", fTemp < 0 ? '-' : '+', iTemp, 'C');
+  } else {
+    snprintf(sTemp, 5, " %c%02d", fTemp < 0 ? '-' : '+', iTemp);
+  }
+  showData(sTemp, false);
 }
 
 void showData(char str[4], bool showDot) {

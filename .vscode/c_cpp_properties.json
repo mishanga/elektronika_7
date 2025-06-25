@@ -1,0 +1,64 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/Users/mishanga/tmp/elektronika_7/src",
+                "/Users/mishanga/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "/Users/mishanga/.platformio/packages/framework-arduino-avr/variants/standard",
+                "/Users/mishanga/Documents/Arduino/libraries/Adafruit_BusIO",
+                "/Users/mishanga/Documents/Arduino/libraries/LedControl/src",
+                "/Users/mishanga/Documents/Arduino/libraries/LiquidCrystal_I2C",
+                "/Users/mishanga/Documents/Arduino/libraries/LiquidCrystal_I2C_Multilingual/src",
+                "/Users/mishanga/Documents/Arduino/libraries/RTClib/src",
+                "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/Users/mishanga/tmp/elektronika_7/src",
+                    "/Users/mishanga/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "/Users/mishanga/.platformio/packages/framework-arduino-avr/variants/standard",
+                    "/Users/mishanga/Documents/Arduino/libraries/Adafruit_BusIO",
+                    "/Users/mishanga/Documents/Arduino/libraries/LedControl/src",
+                    "/Users/mishanga/Documents/Arduino/libraries/LiquidCrystal_I2C",
+                    "/Users/mishanga/Documents/Arduino/libraries/LiquidCrystal_I2C_Multilingual/src",
+                    "/Users/mishanga/Documents/Arduino/libraries/RTClib/src",
+                    "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "/Users/mishanga/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60118",
+                "ARDUINO_AVR_UNO",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega328P__",
+                ""
+            ],
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++11",
+            "compilerPath": "/Users/mishanga/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega328p",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
