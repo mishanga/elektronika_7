@@ -8,21 +8,6 @@
 
 #define setClockDelay 5000
 
-struct SymbolData {
-  char symbol;
-  uint8_t data[3];
-};
-
-// TODO: use PROGMEM
-const SymbolData symbolMaps[] = {
-  { '0', { 31, 17, 31 } },
-  { '1', { 0, 0, 31 } },
-  { '2', { 23, 21, 29 } },
-  { '3', { 17, 21, 31 } },
-  { '4', { 28, 4, 31 } },
-  { '8', { 31, 21, 31 } },
-};
-
 const char fullDateFormat[] = "DD.MM.YYYY hh:mm:ss";
 const char dateFormat[] = "DDMM";
 const char timeFormat[] = "hhmm";
@@ -38,7 +23,29 @@ uint32_t lastSetStateChange = 0;
 uint8_t viewState = 0;
 uint8_t setState = 0;
 
-uint8_t matrixState[8] = { 60, 66, 165, 129, 165, 153, 66, 60 };  // ☺
+uint8_t matrix[8] = { 60, 66, 165, 129, 165, 153, 66, 60 };  // ☺
+
+struct Symbol {
+  char symbol;
+  uint8_t data[3];
+};
+
+// TODO: use PROGMEM
+const Symbol symbolMaps[] = {
+  { '+', { 4, 14, 4 } },
+  { '-', { 4, 4, 4 } },
+  { 'C', { 31, 17, 17 } },
+  { '0', { 31, 17, 31 } },
+  { '1', { 0, 0, 31 } },
+  { '2', { 23, 21, 29 } },
+  { '3', { 17, 21, 31 } },
+  { '4', { 28, 4, 31 } },
+  { '5', { 29, 21, 23 } },
+  { '6', { 31, 21, 23 } },
+  { '7', { 16, 16, 31 } },
+  { '8', { 31, 21, 31 } },
+  { '9', { 29, 21, 31 } },
+};
 
 void setup() {
   Serial.begin(115200);
@@ -55,13 +62,6 @@ void setup() {
   lc.clearDisplay(0);
 
   printMatrix();
-
-  // 0: 31, 17, 31
-  // 1: 0, 0 (8?), 31
-  // 2: 23, 21, 29
-  // 3: 17, 21, 31
-  // 4: 28, 4, 31
-  // 8: 31, 21, 31
 }
 
 void loop() {
@@ -147,18 +147,69 @@ void printDataToLcd(const char c[6]) {
 void printDataToMatrix(const char c[6]) {
   // TODO: use led matrix
   setMatrix(c);
-  updateMatrix(c);
+  printMatrix();
 }
 
 void setMatrix(char c[6]) {
-  Serial.print("set matrix: ");
-  Serial.println(c);
+  setSymbol(c[0], 0);
+  setSymbol(c[1], 1);
+  setSymbol(c[3], 2);
+  setSymbol(c[4], 3);
+
+  if (c[2] == '.') {
+    matrix[3] |= (1 << 4);  // Устанавливаем бит
+  } else {
+    matrix[3] &= ~(1 << 4);  // Сбрасываем бит
+  }
 }
 
-void updateMatrix(char c[6]) {
-  Serial.print("print matrix: ");
-  Serial.println(c);
+void setSymbol(const char c, const uint8_t p) {
+  const uint8_t dg[3] = { 0, 0, 0 };  // default glyph is 000
+  const uint8_t *g = dg;
+  uint8_t rowMask;
+
+  for (const auto &s : symbolMaps) {
+    if (s.letter == c) {
+      g = s.glyph;
+      break;
+    }
+  }
+
+  for (uint8_t col = 0; col < 3; col++) {
+    const uint8_t gBits = g[col];
+    const uint8_t gMask = gBits << (3 - col);
+
+    switch (p) {
+      case 0:
+        // вертикальное заполнение от 0x0
+        rowMask = 1 << (7 - col);
+        for (uint8_t row = 0; row < 5; row++) {
+          matrix[row] &= ~rowMask;
+          matrix[row] |= rowMask & (gMask << row);
+        }
+        break;
+      case 1:
+        // горизонтальное заполнение от 4x0
+        matrix[2 - col] &= 0b11100000;
+        matrix[2 - col] |= gBits;
+        break;
+      case 2:
+        // вертикальное заполнение от 5x4
+        rowMask = 1 << (2 - col);
+        for (uint8_t row = 3; row < 8; row++) {
+          matrix[row] &= ~rowMask;
+          matrix[row] |= rowMask & (gMask >> (8 - row));
+        }
+        break;
+      case 3:
+        // горизонтальное заполнение от 0x5
+        matrix[7 - col] &= 0b00000111;
+        matrix[7 - col] |= gBits << 3;
+        break;
+    }
+  }
 }
+
 
 void printMatrix() {
   for (uint8_t i = 0; i < 8; i++) {
