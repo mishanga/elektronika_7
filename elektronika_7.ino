@@ -26,8 +26,8 @@ uint8_t setState = 0;
 uint8_t matrix[8] = { 60, 66, 165, 129, 165, 153, 66, 60 };  // ☺
 
 struct Symbol {
-  char symbol;
-  uint8_t data[3];
+  char letter;
+  uint8_t glyph[3];
 };
 
 // TODO: use PROGMEM
@@ -210,9 +210,8 @@ void setSymbol(const char c, const uint8_t p) {
   }
 }
 
-
 void printMatrix() {
   for (uint8_t i = 0; i < 8; i++) {
-    lc.setRow(0, i, matrixState[i]);
+    lc.setRow(0, i, matrix[i]);
   }
 }
