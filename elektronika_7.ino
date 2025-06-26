@@ -3,8 +3,25 @@
 #include <RTClib.h>
 
 #define showTimeDelay 10000
-#define showTempDelay 3000
 #define showDateDelay 3000
+#define showTempDelay 3000
+
+#define setClockDelay 5000
+
+struct SymbolData {
+  char symbol;
+  uint8_t data[3];
+};
+
+// TODO: use PROGMEM
+const SymbolData symbolMaps[] = {
+  { '0', { 31, 17, 31 } },
+  { '1', { 0, 0, 31 } },
+  { '2', { 23, 21, 29 } },
+  { '3', { 17, 21, 31 } },
+  { '4', { 28, 4, 31 } },
+  { '8', { 31, 21, 31 } },
+};
 
 const char fullDateFormat[] = "DD.MM.YYYY hh:mm:ss";
 const char dateFormat[] = "DDMM";
@@ -113,20 +130,34 @@ void showWeather() {
   showData(sTemp, false);
 }
 
-void showData(char str[4], bool showDot) {
-  // TODO: use led matrix
+void showData(const char i[5], bool d) {
+  char o[6];
+  snprintf(o, 6, "%c%c%c%c%c", i[0], i[1], d ? '.' : ' ', i[2], i[3]);
+  printDataToLcd(o);
+  printDataToMatrix(o);
+}
+
+void printDataToLcd(const char c[6]) {
   lcd.setCursor(5, 1);
   lcd.print('[');
-  lcd.print(str[0]);
-  lcd.print(str[1]);
-  if (showDot) {
-    lcd.print(".");
-  } else {
-    lcd.print(" ");
-  }
-  lcd.print(str[2]);
-  lcd.print(str[3]);
+  lcd.print(c);
   lcd.print(']');
+}
+
+void printDataToMatrix(const char c[6]) {
+  // TODO: use led matrix
+  setMatrix(c);
+  updateMatrix(c);
+}
+
+void setMatrix(char c[6]) {
+  Serial.print("set matrix: ");
+  Serial.println(c);
+}
+
+void updateMatrix(char c[6]) {
+  Serial.print("print matrix: ");
+  Serial.println(c);
 }
 
 void printMatrix() {
