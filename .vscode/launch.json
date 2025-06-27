@@ -7,7 +7,6 @@
 
 {
     "configurations": [
-        
         {
             "name": "C/C++: g++ сборка и отладка активного файла",
             "type": "cppdbg",

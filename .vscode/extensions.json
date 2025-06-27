@@ -3,7 +3,6 @@
     // for the documentation about the extensions.json format
     "recommendations": [
         "platformio.platformio-ide",
-        "vscode-arduino.vscode-arduino-community",
         "wokwi.wokwi-vscode"
     ],
     "unwantedRecommendations": [
